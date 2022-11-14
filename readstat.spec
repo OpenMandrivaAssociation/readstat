@@ -11,6 +11,12 @@ Summary: Command-line tool and C library for converting SAS, Stata and SPSS file
 URL: https://github.com/WizardMac/ReadStat
 License: MIT
 Group: System/Libraries
+BuildRequires: gettext-devel
+BuildRequires: autoconf
+BuildRequires: automake
+BuildRequires: make
+# So configure can detect iconv() works
+BuildRequires: locales-extra-charsets
 
 %description
 Command-line tool and C library for converting SAS, Stata and SPSS files
