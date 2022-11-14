@@ -1,0 +1,167 @@
+diff -up readstat-1.1.8/src/bin/readstat.c.omv~ readstat-1.1.8/src/bin/readstat.c
+--- readstat-1.1.8/src/bin/readstat.c.omv~	2022-11-14 12:54:23.127768011 +0100
++++ readstat-1.1.8/src/bin/readstat.c	2022-11-14 12:55:27.698136845 +0100
+@@ -154,7 +154,7 @@ readstat_error_t parse_file(readstat_par
+     return error;
+ }
+ 
+-static void print_version() {
++static void print_version(void) {
+     fprintf(stdout, "ReadStat version " READSTAT_VERSION "\n");
+ }
+ 
+@@ -170,6 +170,7 @@ static void print_version() {
+ #define OUTPUT_FORMATS INPUT_FORMATS "|csv"
+ #endif
+ 
++#undef fprintf
+ static void print_usage(const char *cmd) {
+     print_version();
+ 
+diff -up readstat-1.1.8/src/ieee.c.omv~ readstat-1.1.8/src/ieee.c
+diff -up readstat-1.1.8/src/readstat_bits.c.omv~ readstat-1.1.8/src/readstat_bits.c
+--- readstat-1.1.8/src/readstat_bits.c.omv~	2022-11-14 12:51:43.053520638 +0100
++++ readstat-1.1.8/src/readstat_bits.c	2022-11-14 12:51:46.950209549 +0100
+@@ -8,7 +8,7 @@
+ 
+ #include "readstat_bits.h"
+ 
+-int machine_is_little_endian() {
++int machine_is_little_endian(void) {
+     int test_byte_order = 1;
+     return ((char *)&test_byte_order)[0];
+ }
+diff -up readstat-1.1.8/src/readstat_bits.h.omv~ readstat-1.1.8/src/readstat_bits.h
+--- readstat-1.1.8/src/readstat_bits.h.omv~	2022-11-14 12:51:58.346941276 +0100
++++ readstat-1.1.8/src/readstat_bits.h	2022-11-14 12:52:02.896967252 +0100
+@@ -7,7 +7,7 @@
+ #undef READSTAT_MACHINE_IS_TWOS_COMPLEMENT
+ #define READSTAT_MACHINE_IS_TWOS_COMPLEMENT 0
+ 
+-int machine_is_little_endian();
++int machine_is_little_endian(void);
+ 
+ char ones_to_twos_complement1(char num);
+ int16_t ones_to_twos_complement2(int16_t num);
+diff -up readstat-1.1.8/src/readstat_parser.c.omv~ readstat-1.1.8/src/readstat_parser.c
+--- readstat-1.1.8/src/readstat_parser.c.omv~	2022-11-14 12:52:12.127019946 +0100
++++ readstat-1.1.8/src/readstat_parser.c	2022-11-14 12:52:16.037042269 +0100
+@@ -3,7 +3,7 @@
+ #include "readstat.h"
+ #include "readstat_io_unistd.h"
+ 
+-readstat_parser_t *readstat_parser_init() {
++readstat_parser_t *readstat_parser_init(void) {
+     readstat_parser_t *parser = calloc(1, sizeof(readstat_parser_t));
+     parser->io = calloc(1, sizeof(readstat_io_t));
+     if (unistd_io_init(parser) != READSTAT_OK) {
+diff -up readstat-1.1.8/src/readstat_variable.c.omv~ readstat-1.1.8/src/readstat_variable.c
+--- readstat-1.1.8/src/readstat_variable.c.omv~	2022-11-14 12:52:23.453751280 +0100
++++ readstat-1.1.8/src/readstat_variable.c	2022-11-14 12:52:28.043777486 +0100
+@@ -2,10 +2,10 @@
+ #include <stdlib.h>
+ #include "readstat.h"
+ 
+-static readstat_value_t make_blank_value();
++static readstat_value_t make_blank_value(void);
+ static readstat_value_t make_double_value(double dval);
+ 
+-static readstat_value_t make_blank_value() {
++static readstat_value_t make_blank_value(void) {
+     readstat_value_t value = { .is_system_missing = 1, .v = { .double_value = NAN }, .type = READSTAT_TYPE_DOUBLE };
+     return value;
+ }
+diff -up readstat-1.1.8/src/readstat_writer.c.omv~ readstat-1.1.8/src/readstat_writer.c
+--- readstat-1.1.8/src/readstat_writer.c.omv~	2022-11-14 12:52:33.333807690 +0100
++++ readstat-1.1.8/src/readstat_writer.c	2022-11-14 12:52:36.707160284 +0100
+@@ -35,7 +35,7 @@ readstat_string_ref_t *readstat_string_r
+     return ref;
+ }
+ 
+-readstat_writer_t *readstat_writer_init() {
++readstat_writer_t *readstat_writer_init(void) {
+     readstat_writer_t *writer = calloc(1, sizeof(readstat_writer_t));
+ 
+     writer->variables = calloc(VARIABLES_INITIAL_CAPACITY, sizeof(readstat_variable_t *));
+diff -up readstat-1.1.8/src/sas/ieee.c.omv~ readstat-1.1.8/src/sas/ieee.c
+--- readstat-1.1.8/src/sas/ieee.c.omv~	2022-11-14 12:52:48.600561525 +0100
++++ readstat-1.1.8/src/sas/ieee.c	2022-11-14 12:52:53.820591332 +0100
+@@ -16,7 +16,7 @@ static void ieee2xpt(unsigned char *ieee
+ 
+ #ifndef FLOATREP
+ #define FLOATREP get_native()
+-int get_native();
++int get_native(void);
+ #endif
+ 
+ void memreverse(void *intp_void, int l) {
+@@ -96,7 +96,7 @@ int cnxptiee(const void *from_bytes, int
+     return(0);
+ }
+ 
+-int get_native() {
++int get_native(void) {
+     static unsigned char float_reps[][8] = {
+         {0x41,0x10,0x00,0x00,0x00,0x00,0x00,0x00},
+         {0x3f,0xf0,0x00,0x00,0x00,0x00,0x00,0x00},
+diff -up readstat-1.1.8/src/sas/readstat_por.h.omv~ readstat-1.1.8/src/sas/readstat_por.h
+diff -up readstat-1.1.8/src/sas/readstat_sas.c.omv~ readstat-1.1.8/src/sas/readstat_sas.c
+--- readstat-1.1.8/src/sas/readstat_sas.c.omv~	2022-11-14 12:53:03.347312398 +0100
++++ readstat-1.1.8/src/sas/readstat_sas.c	2022-11-14 12:53:06.257329013 +0100
+@@ -120,7 +120,7 @@ static readstat_charset_entry_t _charset
+     { .code = 248,   .name = "SHIFT_JISX0213" },
+ };
+ 
+-static time_t sas_epoch() {
++static time_t sas_epoch(void) {
+     return - 3653 * 86400; // seconds between 01-01-1960 and 01-01-1970
+ }
+ 
+diff -up readstat-1.1.8/src/sas/readstat_xport_read.c.omv~ readstat-1.1.8/src/sas/readstat_xport_read.c
+--- readstat-1.1.8/src/sas/readstat_xport_read.c.omv~	2022-11-14 12:53:14.444042427 +0100
++++ readstat-1.1.8/src/sas/readstat_xport_read.c	2022-11-14 12:53:17.650727404 +0100
+@@ -45,7 +45,7 @@ static readstat_error_t xport_update_pro
+     return io->update(ctx->file_size, ctx->handle.progress, ctx->user_ctx, io->io_ctx);
+ }
+ 
+-static xport_ctx_t *xport_ctx_init() {
++static xport_ctx_t *xport_ctx_init(void) {
+     xport_ctx_t *ctx = calloc(1, sizeof(xport_ctx_t));
+     return ctx;
+ }
+diff -up readstat-1.1.8/src/spss/readstat_por.c.omv~ readstat-1.1.8/src/spss/readstat_por.c
+--- readstat-1.1.8/src/spss/readstat_por.c.omv~	2022-11-14 12:53:36.750836475 +0100
++++ readstat-1.1.8/src/spss/readstat_por.c	2022-11-14 12:53:40.557524882 +0100
+@@ -64,7 +64,7 @@ uint16_t por_unicode_lookup[256] = {
+     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0 };
+ 
+-por_ctx_t *por_ctx_init() {
++por_ctx_t *por_ctx_init(void) {
+     por_ctx_t *ctx = calloc(1, sizeof(por_ctx_t));
+ 
+     ctx->space = ' ';
+diff -up readstat-1.1.8/src/spss/readstat_por.h.omv~ readstat-1.1.8/src/spss/readstat_por.h
+--- readstat-1.1.8/src/spss/readstat_por.h.omv~	2022-11-14 12:53:30.357466632 +0100
++++ readstat-1.1.8/src/spss/readstat_por.h	2022-11-14 12:53:34.290822427 +0100
+@@ -31,7 +31,7 @@ typedef struct por_ctx_s {
+     ck_hash_table_t *var_dict;
+ } por_ctx_t;
+ 
+-por_ctx_t *por_ctx_init();
++por_ctx_t *por_ctx_init(void);
+ void por_ctx_free(por_ctx_t *ctx);
+ ssize_t por_utf8_encode(const unsigned char *input, size_t input_len, 
+         char *output, size_t output_len, uint16_t lookup[256]);
+diff -up readstat-1.1.8/src/spss/readstat_por_write.c.omv~ readstat-1.1.8/src/spss/readstat_por_write.c
+--- readstat-1.1.8/src/spss/readstat_por_write.c.omv~	2022-11-14 12:53:57.624289016 +0100
++++ readstat-1.1.8/src/spss/readstat_por_write.c	2022-11-14 12:54:02.457649953 +0100
+@@ -167,7 +167,7 @@ static readstat_error_t por_write_string
+     return por_write_string_field_n(writer, ctx, string, strlen(string));
+ }
+ 
+-static por_write_ctx_t *por_write_ctx_init() {
++static por_write_ctx_t *por_write_ctx_init(void) {
+     por_write_ctx_t *ctx = calloc(1, sizeof(por_write_ctx_t));
+     uint16_t max_unicode = 0;
+     int i;
