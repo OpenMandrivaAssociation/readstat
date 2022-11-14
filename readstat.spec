@@ -1,4 +1,4 @@
-%define major 0
+%define major 1
 %define libname %mklibname readstat
 %define devname %mklibname readstat -d
 
@@ -26,6 +26,7 @@ C library for converting SAS, Stata and SPSS files
 Summary: Development files for %{name}
 Group: Development/C
 Requires: %{libname} = %{EVRD}
+Provides: %{name}-devel = %{EVRD}
 
 %description -n %{devname}
 Development files (Headers etc.) for %{name}, a
@@ -43,6 +44,7 @@ C library for converting SAS, Stata and SPSS files
 
 %files
 %{_bindir}/*
+%{_mandir}/man1/*.1*
 
 %files -n %{libname}
 %{_libdir}/*.so.%{major}*
@@ -50,4 +52,3 @@ C library for converting SAS, Stata and SPSS files
 %files -n %{devname}
 %{_includedir}/*
 %{_libdir}/*.so
-%{_libdir}/pkgconfig/*
