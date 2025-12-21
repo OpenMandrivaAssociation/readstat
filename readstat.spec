@@ -11,6 +11,8 @@ Summary: Command-line tool and C library for converting SAS, Stata and SPSS file
 URL: https://github.com/WizardMac/ReadStat
 License: MIT
 Group: System/Libraries
+BuildRequires:	libtool-base
+BuildRequires:	slibtool
 BuildRequires: gettext-devel
 BuildRequires: autoconf
 BuildRequires: automake
