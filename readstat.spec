@@ -3,10 +3,10 @@
 %define devname %mklibname readstat -d
 
 Name: readstat
-Version: 1.1.8
-Release: 2
+Version: 1.1.9
+Release: 1
 Source0: https://github.com/WizardMac/ReadStat/releases/download/v%{version}/readstat-%{version}.tar.gz
-Patch0: readstat-1.1.8-clang15-warnings.patch
+# dropped (no longer applies): Patch0: readstat-1.1.9-clang15-warnings.patch
 Summary: Command-line tool and C library for converting SAS, Stata and SPSS files
 URL: https://github.com/WizardMac/ReadStat
 License: MIT
